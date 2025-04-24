@@ -1,0 +1,18 @@
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Update initramfs
+  ansible.builtin.command: update-initramfs -u
+
+- name: Update GRUB
+  ansible.builtin.command: update-grub
+
+- name: Update network
+  ansible.builtin.command: ifreload -a
+
+- name: Reboot system
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+    post_reboot_delay: 10
+    test_command: whoami

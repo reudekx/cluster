@@ -1,0 +1,61 @@
+- name: Install DKMS package
+  ansible.builtin.apt:
+    deb: http://ftp.debian.org/debian/pool/main/d/dkms/dkms_3.1.8-1_all.deb
+    state: present
+
+- name: Install r8168-dkms package
+  ansible.builtin.apt:
+    deb: http://ftp.debian.org/debian/pool/non-free/r/r8168/r8168-dkms_8.055.00-1_all.deb
+    state: present
+
+- name: Blacklist default r8169 kernel module
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/blacklist-r8169.conf
+    content: "blacklist r8169\n"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Update initramfs
+    - Reboot system
+
+- name: Set GRUB kernel parameters
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: ^(GRUB_CMDLINE_LINUX=""$)
+    line: \1="r8168.aspm=0 r8168.eee_enable=0 pcie_aspm=off loglevel=3"
+    backrefs: true
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Update GRUB
+    - Reboot system
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Re-gather facts after potential driver install/load
+  ansible.builtin.setup:
+
+- name: Find wired interface name from facts
+  ansible.builtin.set_fact:
+    wired_interface: "{{ ansible_facts['interfaces'] | select('match', '^(eth|en)') | first | default('unknown') }}"
+  failed_when: wired_interface == "unknown"
+
+- name: Configure network interface
+  ansible.builtin.template:
+    src: interfaces.j2
+    dest: /etc/network/interfaces
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+  notify: Update network
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Debug - complete message
+  ansible.builtin.debug:
+    msg: Network configuration complete. Connection established on {{ wired_interface }} interface.

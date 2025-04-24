@@ -1,0 +1,22 @@
+---
+- name: Install Proxmox VE and configure network
+  hosts: all
+  become: true
+  gather_facts: true
+  environment:
+    PATH: "/usr/sbin:{{ ansible_env.PATH }}"
+
+  tasks:
+    - name: Install Proxmox VE
+      ansible.builtin.include_role:
+        name: proxmox
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Configure network
+      ansible.builtin.include_role:
+        name: network
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
