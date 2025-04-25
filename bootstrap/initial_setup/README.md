@@ -26,14 +26,14 @@ Proxmox 8의 커널과 패키지를 설치한 뒤
 ## 디렉토리 구조
 
 ```
-bootstrap/
-├── Makefile          # 실행을 위한 Makefile
+initial_setup/
+├── Makefile			# 실행을 위한 Makefile
 ├── ansible/
-│   ├── ansible.cfg   # Ansible 설정 파일
-│   ├── bootstrap.yml # 메인 플레이북
-│   └── roles/        # Ansible Role
-│       ├── network/  # 네트워크 설정 Role
-│       └── proxmox/  # Proxmox 설치 Role
+│   ├── ansible.cfg		# Ansible 설정 파일
+│   ├── site.yml		# 메인 플레이북
+│   └── roles/			# Ansible Role
+│       ├── network/	# 네트워크 설정 Role
+│       └── proxmox/	# Proxmox 설치 Role
 ```
 
 ## 사용 방법
