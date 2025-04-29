@@ -10,4 +10,4 @@ check_vars:
 
 initial_setup: check_vars
 	@ssh-copy-id $(USER)@$(HOST)
-	@cd ansible && ansible-playbook -i $(USER)@$(HOST), site.yml -K
+	@cd ansible && ansible-playbook -i $(USER)@$(HOST), main.yml -K
